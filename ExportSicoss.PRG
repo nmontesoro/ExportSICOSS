@@ -141,39 +141,39 @@ SCAN
 
 	STRTOFILE("Buenos Aires - Resto de la Provincia              ", sOutFilename, .T.)
 
-	STRTOFILE(FormatMoney(contos, 12), sOutFilename, .T.)
-	STRTOFILE(FormatMoney(contos, 12), sOutFilename, .T.) && Duplicado?
-	STRTOFILE(FormatMoney(contos / medjor, 12), sOutFilename, .T.)
-	STRTOFILE(PadString(codsin, 2, '0'), sOutFilename, .T.)
-	STRTOFILE("F", sOutFilename, .T.) && *TODO: V o F segun CCT
-	STRTOFILE("     0,001", sOutFilename, .T.) && *TODO: Remuneracion imponible 3
-	STRTOFILE(FormatMoney(IIF(ooss == CODIGO_OOSS_COMERCIO, 100, 0), 9), sOutFilename, .T.)
+	STRTOFILE(FormatMoney(contos, 12), sOutFilename, .T.) && Remuneracion Imponible 2
+	STRTOFILE(FormatMoney(contos, 12), sOutFilename, .T.) && Remuneracion Imponible 3
+	STRTOFILE(FormatMoney(contos / medjor, 12), sOutFilename, .T.) && Remuneracion Imponible 4
+	STRTOFILE(PadString(codsin, 2, '0'), sOutFilename, .T.) && Codigo de siniestrado
+	STRTOFILE("F", sOutFilename, .T.) && *TODO: Corresponde reduccion
+	STRTOFILE("     0,001", sOutFilename, .T.) && *TODO: Recomposicion LRT
+	STRTOFILE(FormatMoney(IIF(ooss == CODIGO_OOSS_COMERCIO, 100, 0), 9), sOutFilename, .T.) && Aporte adicional OOSS
 
 	STRTOFILE(GetSitAndDayString(sit1, sit2, sit3, dia1, dia2, dia3), sOutFilename, .T.)
-	STRTOFILE(FormatMoney(sueldo, 12), sOutFilename, .T.)
-	STRTOFILE(FormatMoney(sac, 12), sOutFilename, .T.)
-	STRTOFILE("        0,00        0,00", sOutFilename, .T.) && *TODO: Ver que son (posiblemente premios, hs extra o viceversa)
-	STRTOFILE(FormatMoney(vac, 12), sOutFilename, .T.)
-	STRTOFILE(PadString(diastr, 9, '0'), sOutFilename, .T.)
-	STRTOFILE(FormatMoney(remtot, 12), sOutFilename, .T.) && *TODO: Ver diferencias importantes...
-	STRTOFILE(IIF(encct, "T", "F"), sOutFilename, .T.)
+	STRTOFILE(FormatMoney(sueldo, 12), sOutFilename, .T.) && Sueldo + adicionales
+	STRTOFILE(FormatMoney(sac, 12), sOutFilename, .T.) && SAC
+	STRTOFILE("        0,00        0,00", sOutFilename, .T.) && *TODO: Hs. Extra, zona desfavorable
+	STRTOFILE(FormatMoney(vac, 12), sOutFilename, .T.) && Vacaciones
+	STRTOFILE(PadString(diastr, 9, '0'), sOutFilename, .T.) && Dias trabajados
+	STRTOFILE(FormatMoney(remtot, 12), sOutFilename, .T.) && *TODO: Remuneracion Imponible 5
+	STRTOFILE(IIF(encct, "T", "F"), sOutFilename, .T.) && Trabajador convencionado (en CCT)
 
-	STRTOFILE(FormatMoney(0, 12), sOutFilename, .T.) && Posiblemente importe de hs extra
-	STRTOFILE("0", sOutFilename, .T.) && Posiblemente cantidad de hs extra
-	STRTOFILE(FormatMoney(adicionales, 12), sOutFilename, .T.)
-	STRTOFILE(FormatMoney(0, 12), sOutFilename, .T.) && Algo como lo anterior
-	STRTOFILE(FormatMoney(contos / medjor, 12), sOutFilename, .T.) && *TODO: Raro que este dos veces
-	STRTOFILE(FormatMoney(0, 12), sOutFilename, .T.) && A esta altura, ni idea
+	STRTOFILE(FormatMoney(0, 12), sOutFilename, .T.) && Rem. Impo. 6
+	STRTOFILE("0", sOutFilename, .T.) && Tipo de operacion
+	STRTOFILE(FormatMoney(adicionales, 12), sOutFilename, .T.) && Adicionales
+	STRTOFILE(FormatMoney(0, 12), sOutFilename, .T.) && Premios
+	STRTOFILE(FormatMoney(contos / medjor, 12), sOutFilename, .T.) && *TODO: Dec 788/05, Rem. Impo. 8
+	STRTOFILE(FormatMoney(0, 12), sOutFilename, .T.) && *TODO: Rem. Impo. 7
 
-	STRTOFILE("000", sOutFilename, .T.) && Idem
+	STRTOFILE("000", sOutFilename, .T.) && *TODO: Cantidad Hs. Extra
 
-	STRTOFILE(FormatMoney(noremunerativos, 12), sOutFilename, .T.)
+	STRTOFILE(FormatMoney(noremunerativos, 12), sOutFilename, .T.) && No remunerativos
 
-	STRTOFILE("        0,00     0,00", sOutFilename, .T.)
+	STRTOFILE("        0,00     0,00", sOutFilename, .T.) && *TODO: Maternidad, rectificacion de remuneracion
 
-	STRTOFILE(FormatMoney(remtot, 12), sOutFilename, .T.)
+	STRTOFILE(FormatMoney(remtot, 12), sOutFilename, .T.) && Remuneracion Imponible 9
 
-	STRTOFILE("     0,00000", sOutFilename, .T.)
+	STRTOFILE("     0,00000", sOutFilename, .T.) && *TODO: Contribucion tarea diferencial
 
 	STRTOFILE(IIF(segvid, 'T', 'F'), sOutFilename, .T.) && Con cobertura de seguro colectivo de vida obligatorio
 
