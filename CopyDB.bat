@@ -20,4 +20,4 @@ copy %PATHSICOSS%\SI220000.mdb sijp12\
 echo Ya puede cerrar SIAP.
 SET /P sMonth=Que mes desea calcular? (1-12):
 
-ExportSICOSS.exe .\Recibos.dbc %sMonth% .\SICOSS-%sMonth%.txt
+ExportSICOSS.exe .\Recibos.dbc %sMonth% .\SICOSS-%sMonth%.txt e:\_Temp\RecibosMC\ExportSICOSS\ExportSICOSS\Recibo.xls
