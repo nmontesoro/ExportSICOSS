@@ -77,7 +77,7 @@ SELECT (STRTRAN(cuil, "-", "")) AS cuil, empl AS nombre, ;
 	(0) AS aporteadss, ;
 	(_SUELDO + _ADICIONALES + _SAC + _VACACIONES) AS contos, ;
 	(obrsoc + anssal) AS oossanssal, ;
-	(2.5) AS medjor ;
+	(2.5) AS jornada ;
 	FROM recibo ;
 	WHERE ALLTRIM(STR(MONTH(feclia)))==sCurrentMonth AND YEAR(feclia)==YEAR(DATE()) ;
 	INTO CURSOR C_Rec READWRITE ;
@@ -116,7 +116,7 @@ ENDIF
 
 * 2.5 es el valor arbitrario que asigné más arriba.
 * No tiene que quedar ningun row así después del llamado a InsertJornal.
-SELECT cuil, empl FROM C_Def WHERE medjor == 2.5 INTO CURSOR C_Temp
+SELECT cuil, empl FROM C_Def WHERE jornada == 2.5 INTO CURSOR C_Temp
 
 IF _TALLY > 0
 	MESSAGEBOX("Las siguientes CUIL no figuran en la planilla de jornadas ('" + sPathPlanilla + "'). No se puede continuar.")
@@ -147,7 +147,7 @@ SCAN
 
 	STRTOFILE(FormatMoney(contos, 12), sOutFilename, .T.) && Remuneracion Imponible 2
 	STRTOFILE(FormatMoney(contos, 12), sOutFilename, .T.) && Remuneracion Imponible 3
-	STRTOFILE(FormatMoney(contos / medjor, 12), sOutFilename, .T.) && Remuneracion Imponible 4
+	STRTOFILE(FormatMoney(contos / jornada, 12), sOutFilename, .T.) && Remuneracion Imponible 4
 	STRTOFILE(PadString(codsin, 2, '0'), sOutFilename, .T.) && Codigo de siniestrado
 	STRTOFILE("F", sOutFilename, .T.) && *TODO: Corresponde reduccion
 	STRTOFILE("     0,001", sOutFilename, .T.) && *TODO: Recomposicion LRT
@@ -166,7 +166,7 @@ SCAN
 	STRTOFILE("0", sOutFilename, .T.) && Tipo de operacion
 	STRTOFILE(FormatMoney(adicionales, 12), sOutFilename, .T.) && Adicionales
 	STRTOFILE(FormatMoney(0, 12), sOutFilename, .T.) && Premios
-	STRTOFILE(FormatMoney(contos / medjor, 12), sOutFilename, .T.) && *TODO: Dec 788/05, Rem. Impo. 8
+	STRTOFILE(FormatMoney(contos / jornada, 12), sOutFilename, .T.) && *TODO: Dec 788/05, Rem. Impo. 8
 	STRTOFILE(FormatMoney(0, 12), sOutFilename, .T.) && *TODO: Rem. Impo. 7
 
 	STRTOFILE("000", sOutFilename, .T.) && *TODO: Cantidad Hs. Extra
@@ -181,7 +181,7 @@ SCAN
 
 	STRTOFILE(IIF(segvid, 'T', 'F'), sOutFilename, .T.) && Con cobertura de seguro colectivo de vida obligatorio
 
-	nDetraccion = medjor * MAX_DETRACCION
+	nDetraccion = jornada * MAX_DETRACCION
 
 	nRem10 = contos - nDetraccion
 
@@ -282,7 +282,7 @@ FUNCTION InsertJornal(sPathPlanilla)
 
 			sCUIL = STRTRAN(oRange.Cells(6, nCol).Value, "-", "")
 			nJornal = oRange.Cells(27, nCol).Value
-			UPDATE C_Rec SET medjor = nJornal WHERE cuil == sCUIL
+			UPDATE C_Rec SET jornada = nJornal WHERE cuil == sCUIL
 			nCol = nCol + 1
 		ENDDO
 
