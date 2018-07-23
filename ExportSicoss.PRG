@@ -1,11 +1,6 @@
-*TODO: Copia de DB SICOSS
 *TODO: Sueldo en 0?
 *PREGUNTAR: Cifras en 0,01 en SICOSS; 0,00 aca
-*PREGUNTAR: Diferencias con Landeyra
-*PREGUNTAR: Cargaron accidente de Aguirre, Ignacio en SICOSS? Cargado como adicional? (Ver diferencias)
 *PREGUNTAR: Ver detracciones de ORTUETA, ARANDA, TALAVERA, LESCANO (0 en SICOSS, 1200 aca)
-*PREGUNTAR: (Junio) Diferencia de Sosa, Lucia Jeanette en conceptos no remunerativos no cargados a SICOSS. Idem Rafael en Enero.
-*PREGUNTAR: Datos de ejemplo para verificacion
 *PREGUNTAR: (Febrero) Cepeda y Baigorria NQV (Sueldo en $0.00)
 * TODO: Agrupar recibos
 
@@ -19,10 +14,17 @@
 
 #define CODIGO_OOSS_COMERCIO "126205"
 
+* MNI: Minimo no Imponible para detracciones
+#define MNI 2664.52
+
+* MAX_DETRACCION: Si bien la detraccion máxima es de 3600 en este momento,
+* ese importe es solo para casos especiales. Ver más adelante.
+#define MAX_DETRACCION 2400
+
 #define CRLF CHR(13) + CHR(10)
 
-LPARAMETERS sDB, nCurrentMonth, sOutFilename
-LOCAL xSQLConn, sPeriod, sQuery, sPathPlanilla, sPathSICOSSDB, sSQLStr, nRowCount
+LPARAMETERS sDB, sCurrentMonth, sOutFilename
+LOCAL xSQLConn, sPeriod, sQuery, sPathPlanilla, sPathSICOSSDB, sSQLStr, nRowCount, nDetraccion, nRem10
 
 SET SAFETY OFF
 SET TEXTMERGE ON
@@ -30,8 +32,8 @@ SET TEXTMERGE ON
 #ifdef testing
 	CLEAR ALL
 	sDB = ".\Recibos.dbc"
-*	nCurrentMonth = MONTH(DATE()) - 1
-	nCurrentMonth = 2
+*	sCurrentMonth = MONTH(DATE()) - 1
+	sCurrentMonth = "6"
 	sOutFilename = ".\SICOSS.txt"
 #endif
 
@@ -47,8 +49,9 @@ DRIVER=Microsoft Access Driver (*.mdb);DBQ=<<sPathSICOSSDB>>;PWD=naDdePraKciN
 ENDTEXT
 
 ? "Accediendo a SICOSS..."
+
 xSQLConn = SQLSTRINGCONNECT(sSQLStr)
-sPeriod = "'" + ALLTRIM(STR(YEAR(DATE()))) + PADL(nCurrentMonth, 2, '0') + "'"
+sPeriod = "'" + ALLTRIM(STR(YEAR(DATE()))) + PADL(sCurrentMonth, 2, '0') + "'"
 sQuery = "SELECT * FROM 22CUILes WHERE [Período]=" + sPeriod
 
 IF xSQLConn >= 1
@@ -76,12 +79,14 @@ SELECT (STRTRAN(cuil, "-", "")) AS cuil, empl AS nombre, ;
 	(obrsoc + anssal) AS oossanssal, ;
 	(2.5) AS medjor ;
 	FROM recibo ;
-	WHERE MONTH(feclia)==nCurrentMonth AND YEAR(feclia)==YEAR(DATE()) ;
+	WHERE ALLTRIM(STR(MONTH(feclia)))==sCurrentMonth AND YEAR(feclia)==YEAR(DATE()) ;
 	INTO CURSOR C_Rec READWRITE ;
 	GROUP BY cuil ;
 	ORDER BY cuil ASC
 
 nRowCount = _TALLY
+
+UPDATE C_Rec SET sueldo = 0.01 WHERE sueldo == 0 && Sueldo no puede ser 0 según SICOSS
 
 InsertJornal(sPathPlanilla)
 
@@ -106,7 +111,6 @@ IF ! _TALLY == nRowCount
 		FROM C_Rec ;
 		LEFT JOIN C_SICOSS ON C_Rec.cuil == C_SICOSS.cuil ;
 		WHERE C_SICOSS.cuil IS NULL
-	CLOSE DATABASES
 	CloseOnError("Diferencias en CUIL")
 ENDIF
 
@@ -155,7 +159,7 @@ SCAN
 	STRTOFILE("        0,00        0,00", sOutFilename, .T.) && *TODO: Hs. Extra, zona desfavorable
 	STRTOFILE(FormatMoney(vac, 12), sOutFilename, .T.) && Vacaciones
 	STRTOFILE(PadString(diastr, 9, '0'), sOutFilename, .T.) && Dias trabajados
-	STRTOFILE(FormatMoney(remtot, 12), sOutFilename, .T.) && *TODO: Remuneracion Imponible 5
+	STRTOFILE(FormatMoney(contos, 12), sOutFilename, .T.) && *TODO: Remuneracion Imponible 5
 	STRTOFILE(IIF(encct, "T", "F"), sOutFilename, .T.) && Trabajador convencionado (en CCT)
 
 	STRTOFILE(FormatMoney(0, 12), sOutFilename, .T.) && Rem. Impo. 6
@@ -177,12 +181,22 @@ SCAN
 
 	STRTOFILE(IIF(segvid, 'T', 'F'), sOutFilename, .T.) && Con cobertura de seguro colectivo de vida obligatorio
 
-	STRTOFILE(FormatMoney(IIF(medjor < 1, 1200, 2400), 12), sOutFilename, .T.)
+	nDetraccion = medjor * MAX_DETRACCION
+
+	nRem10 = contos - nDetraccion
+
+	IF nRem10 < MNI
+		nDetraccion = 0
+	ENDIF
+
+	STRTOFILE(FormatMoney(nDetraccion, 12), sOutFilename, .T.) && Detraccion
 
 	STRTOFILE(CRLF, sOutFilename, .T.)
 ENDSCAN
 
-? CHR(9) + "Listo."
+MESSAGEBOX("Archivo creado con exito", 64)
+
+CLOSE DATABASES
 
 FUNCTION FormatName(sName)
 *	RETURN PADR(UPPER(ALLTRIM(sName)), 30, " ")
