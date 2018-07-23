@@ -4,7 +4,7 @@
 *PREGUNTAR: (Febrero) Cepeda y Baigorria NQV (Sueldo en $0.00)
 * TODO: Agrupar recibos
 
-*#define testing
+#define testing
 
 #define _SUELDO suebas + accid + susp + falta + enfer
 #define _ADICIONALES adibas + antigu + pres
