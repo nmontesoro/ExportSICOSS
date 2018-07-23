@@ -4,7 +4,7 @@
 *PREGUNTAR: (Febrero) Cepeda y Baigorria NQV (Sueldo en $0.00)
 * TODO: Agrupar recibos
 
-#define testing
+*#define testing
 
 #define _SUELDO suebas + accid + susp + falta + enfer
 #define _ADICIONALES adibas + antigu + pres
@@ -23,7 +23,7 @@
 
 #define CRLF CHR(13) + CHR(10)
 
-LPARAMETERS sDB, sCurrentMonth, sOutFilename
+LPARAMETERS sDB, sCurrentMonth, sOutFilename, sPathPlanilla
 LOCAL xSQLConn, sPeriod, sQuery, sPathPlanilla, sPathSICOSSDB, sSQLStr, nRowCount, nDetraccion, nRem10
 
 SET SAFETY OFF
@@ -35,9 +35,8 @@ SET TEXTMERGE ON
 *	sCurrentMonth = MONTH(DATE()) - 1
 	sCurrentMonth = "6"
 	sOutFilename = ".\SICOSS.txt"
+	sPathPlanilla = "e:\_Temp\RecibosMC\Recibo.xls"
 #endif
-
-sPathPlanilla = "e:\_Temp\RecibosMC\Recibo.xls"
 
 OPEN DATABASE (sDB) SHARED NOUPDATE
 
