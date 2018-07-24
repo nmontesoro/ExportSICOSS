@@ -10,10 +10,12 @@ pause > nul
 
 start %SIAP%
 
+echo.
 echo Si ya abrio SICOSS, presione enter...
 pause > nul
 
-IF NOT EXIST %PATHEMPRESA%\sijp12\ mkdir %PATHEMPRESA%\sijp12
+IF NOT EXIST %PATHEMPRESA%\sijp12\ MKDIR %PATHEMPRESA%\sijp12
+IF NOT EXIST %PATHEXPORT% MKDIR %PATHEXPORT%
 
 copy %PATHSICOSS%\SIJP12.mdb sijp12\
 
