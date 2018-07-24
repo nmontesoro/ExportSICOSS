@@ -1,5 +1,7 @@
 @echo off
 
+REM Cambiar path del ejecutable para que pueda ser llamado desde otro .bat !
+
 SET SIAP=%1
 SET PATHEMPRESA=%2
 SET PATHSICOSS=%3
