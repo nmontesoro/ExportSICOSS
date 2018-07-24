@@ -23,3 +23,7 @@ echo Ya puede cerrar SIAP.
 SET /P MONTH=Que mes desea calcular? (1-12):
 
 %PATHEMPRESA%\ExportSICOSS.exe %PATHEMPRESA%\Recibos.dbc %MONTH% %PATHEXPORT%\SICOSS-%MONTH%.txt %PATHEMPRESA%\Recibo.xls
+
+IF EXIST %PATHEXPORT%\SICOSS-%MONTH%.txt (
+    explorer %PATHEXPORT%
+)
