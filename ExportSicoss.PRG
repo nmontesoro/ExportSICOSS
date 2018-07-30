@@ -193,6 +193,10 @@ SCAN
 	STRTOFILE(CRLF, sOutFilename, .T.)
 ENDSCAN
 
+#ifdef testing
+	ComprobarValores()
+#endif
+
 MESSAGEBOX("Archivo creado con exito", 64)
 
 CLOSE DATABASES
@@ -300,3 +304,27 @@ FUNCTION CloseOnError(sMsg)
 	RETURN 0
 #endif
 ENDFUNC
+
+PROCEDURE ComprobarValores
+	SELECT C_Rec.*, C_SICOSS.* FROM c_rec ;
+		inner join c_sicoss on c_rec.cuil == c_sicoss.cuil ;
+		into cursor c_test readwrite
+
+	create cursor c_fields (field1 c(40), field2 c(40))
+
+	insert into c_fields (field1, field2) values ("sueldo", "sueldoadic")
+	insert into c_fields (field1, field2) values ("adicionales_a", "adicionales_b")
+	insert into c_fields (field1, field2) values ("sac_a", "sac_b")
+	insert into c_fields (field1, field2) values ("vac", "vacaciones")
+	insert into c_fields (field1, field2) values ("noremunerativos", "conceptonoremun")
+	insert into c_fields (field1, field2) values ("remtot", "remuneración_total")
+	insert into c_fields (field1, field2) values ("remimpap", "remuneración_imponible_aportes")
+		
+	sele c_fields
+	scan
+		sFld1 = ALLTRIM(c_fields.field1)
+		sFld2 = ALLTRIM(c_fields.field2)
+		
+		sele nombre, &sFld1, &sFld2 from c_test where abs(&sFld1 - &sFld2) > .5
+	endscan
+ENDPROC
