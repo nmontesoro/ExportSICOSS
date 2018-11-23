@@ -1,3 +1,5 @@
+**Repo archivado: ver nueva versión en [nmontesoro/ExportSICOSS_v2](https://bit.ly/2AiNHap)**
+
 # ExportSICOSS
 Codigo en VFP 7 para exportación de datos de SICOSS a archivo .txt
 
